@@ -88,3 +88,18 @@ if nonparametric
 end
 
 disp('Hi4');
+%% Explore autocorrelations and cross correlations in greek stocks
+maxtau = 20;
+maxtau2 = 10;
+p = 1;
+M = 100;
+alpha = 0.05;
+% zalpha = norminv(1-alpha/2);
+zalpha = 1.96;
+
+yM = load('../data/stocks2003.dat');
+[n,m]=size(yM);
+% rng(1);
+
+% Read the names of the stocks
+nameM = textread('../data/stock_names.dat','%s');
