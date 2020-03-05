@@ -42,7 +42,7 @@ yM = tmpdata';
 %% First index
 indx1 = ceil(m*rand);
 y1V = yM(:,indx1);
-name1 = cell2mat{yM(indx1,:)};
+name1 = cell2mat(nameM(indx1,:));
 % If NaN replace them with interpolated values
 i1V = find(isnan(y1V));
 if ~isempty(i1V)
@@ -55,7 +55,7 @@ clf
 plot(y1V,'.-')
 xlabel('day t')
 ylabel('y(t)')
-title(sprintf('stock %s',name1))
+title(sprintf('variable %s',name1))
 
 acy1M = autocorrelation(y1V,maxtau);
 figure(2)
@@ -63,7 +63,7 @@ clf
 plot(acy1M(:,1),acy1M(:,2),'.-')
 xlabel('lag \tau')
 ylabel('r_Y(\tau)')
-title(sprintf('autocorrelation of stock %s',name1))
+title(sprintf('autocorrelation of variable %s',name1))
 
 %% Second index
 indx2 = ceil(m*rand);
@@ -81,7 +81,7 @@ clf
 plot(y2V,'.-')
 xlabel('day t')
 ylabel('y(t)')
-title(sprintf('stock %s',name2))
+title(sprintf('variable %s',name2))
 
 acy2M = autocorrelation(y2V,maxtau);
 figure(4)
@@ -89,7 +89,7 @@ clf
 plot(acy2M(:,1),acy2M(:,2),'.-')
 xlabel('lag \tau')
 ylabel('r_Y(\tau)')
-title(sprintf('autocorrelation of stock %s',name2))
+title(sprintf('autocorrelation of variable %s',name2))
 
 ccyV = mycrosscorr(y1V,y2V,maxtau2);
 figure(5)
@@ -97,7 +97,7 @@ clf
 plot([-maxtau2:maxtau2]',ccyV,'.-')
 xlabel('lag \tau')
 ylabel('r_{XY}(\tau)')
-title(sprintf('Cross Corr of stock %s and %s',name1,name2))
+title(sprintf('Cross Corr of variable %s and %s',name1,name2))
 
 %% Prewhitening, first method: Fit AR model and use the residuals
 ey1V = fitAR(y1V,p);
@@ -106,7 +106,7 @@ clf
 plot(ey1V,'.-')
 xlabel('day t')
 ylabel('residual of AR of y(t)')
-title(sprintf('stock %s, residual from AR(%d)',name1,p))
+title(sprintf('variable %s, residual from AR(%d)',name1,p))
 
 acey1M = autocorrelation(ey1V,maxtau);
 figure(7)
@@ -117,7 +117,7 @@ plot([0 maxtau],(zalpha/sqrt(n))*[1 1],'c--')
 plot([0 maxtau],-(zalpha/sqrt(n))*[1 1],'c--')
 xlabel('lag \tau')
 ylabel('r_Y(\tau)')
-title(sprintf('autocorrelation of stock %s, residual from AR(%d)',name1,p))
+title(sprintf('autocorrelation of variable %s, residual from AR(%d)',name1,p))
 
 ey2V = fitAR(y2V,p);
 figure(8)
@@ -125,7 +125,7 @@ clf
 plot(ey2V,'.-')
 xlabel('day t')
 ylabel('residual of AR of y(t)')
-title(sprintf('stock %s, residual from AR(%d)',name2,p))
+title(sprintf('variable %s, residual from AR(%d)',name2,p))
 
 acey2M = autocorrelation(ey2V,maxtau);
 figure(9)
@@ -136,7 +136,7 @@ plot([0 maxtau],(zalpha/sqrt(n))*[1 1],'c--')
 plot([0 maxtau],-(zalpha/sqrt(n))*[1 1],'c--')
 xlabel('lag \tau')
 ylabel('r_Y(\tau)')
-title(sprintf('autocorrelation of stock %s, residual from AR(%d)',name2,p))
+title(sprintf('autocorrelation of variable %s, residual from AR(%d)',name2,p))
 
 cceyV = mycrosscorr(ey1V,ey2V,maxtau2);
 figure(10)
@@ -147,7 +147,7 @@ plot([-maxtau2 maxtau2],(zalpha/sqrt(n))*[1 1],'c--')
 plot([-maxtau2 maxtau2],-(zalpha/sqrt(n))*[1 1],'c--')
 xlabel('lag \tau')
 ylabel('r_{XY}(\tau)')
-title(sprintf('Cross Corr of stock %s and %s, residual from AR(%d)',name1,name2,p))
+title(sprintf('Cross Corr of variable %s and %s, residual from AR(%d)',name1,name2,p))
 
 %% Prewhitening, second method: Take first differences (or log returns)
 ey1V = log(y1V(2:n))-log(y1V(1:n-1));
@@ -156,7 +156,7 @@ clf
 plot(ey1V,'.-')
 xlabel('day t')
 ylabel('log returns of y(t)')
-title(sprintf('stock %s, log returns',name1))
+title(sprintf('variable %s, log returns',name1))
 
 acey1M = autocorrelation(ey1V,maxtau);
 figure(12)
@@ -167,7 +167,7 @@ plot([0 maxtau],(zalpha/sqrt(n))*[1 1],'c--')
 plot([0 maxtau],-(zalpha/sqrt(n))*[1 1],'c--')
 xlabel('lag \tau')
 ylabel('r_Y(\tau)')
-title(sprintf('autocorrelation of stock %s, log returns',name1))
+title(sprintf('autocorrelation of variable %s, log returns',name1))
 
 ey2V = log(y2V(2:n))-log(y2V(1:n-1));
 figure(13)
@@ -175,7 +175,7 @@ clf
 plot(ey2V,'.-')
 xlabel('day t')
 ylabel('log returns of y(t)')
-title(sprintf('stock %s, log returns',name2))
+title(sprintf('variable %s, log returns',name2))
 
 acey2M = autocorrelation(ey2V,maxtau);
 figure(14)
@@ -186,7 +186,7 @@ plot([0 maxtau],(zalpha/sqrt(n))*[1 1],'c--')
 plot([0 maxtau],-(zalpha/sqrt(n))*[1 1],'c--')
 xlabel('lag \tau')
 ylabel('r_Y(\tau)')
-title(sprintf('autocorrelation of stock %s, log returns',name2))
+title(sprintf('autocorrelation of variable %s, log returns',name2))
 
 cceyV = mycrosscorr(ey1V,ey2V,maxtau2);
 figure(15)
@@ -197,5 +197,5 @@ plot([-maxtau2 maxtau2],(zalpha/sqrt(n))*[1 1],'c--')
 plot([-maxtau2 maxtau2],-(zalpha/sqrt(n))*[1 1],'c--')
 xlabel('lag \tau')
 ylabel('r_{XY}(\tau)')
-title(sprintf('Cross Corr of stock %s and %s, log returns',name1,name2))
+title(sprintf('Cross Corr of variable %s and %s, log returns',name1,name2))
 
