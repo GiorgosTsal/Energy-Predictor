@@ -1,0 +1,68 @@
+%% example for Multivariate linear regression
+%% clear env,get and set current directory
+clc
+clear
+currdir = pwd
+fprintf(currdir)
+userpath(currdir) %set working directory to current dir of .m file
+%% load my dataset and convert date to number 
+name = '/energydata_complete.csv';
+filename = strcat(currdir,name)
+data = importfile(filename)
+
+data.date = datenum(data.date, 'yyyy-mm-dd HH:MM:SS');
+ts = data.date; % temp variable 
+ts = ts*24*60*60; % tranform date to seconds
+ts = ts - ts(1); % subtract sample one from all the other time samples(to start from zero secs)
+data.date = ts;
+
+
+% Load the sample data.
+load('flu')
+
+tmpdata = table2array(data);
+
+%% Extract the response and predictor data
+Y = double(flu(:,2:end-1));
+[n,d] = size(Y);
+x = flu.WtdILI;
+%% set them to check
+target = tmpdata(:,2); % set appliance as target
+tmpdata(:,2) = []; % delete target col
+disp("ha");
+
+regions = data.Properties.VariableNames;
+
+Y = tmpdata
+x = target
+[n,d] = size(Y);
+disp('Hi');
+%% Plot the flu data, grouped by region
+figure;
+%regions = flu.Properties.VarNames(2:end-1);
+plot(x,Y,'x')
+legend(regions,'Location','NorthWest')
+
+disp("haaaaaaaa");
+%% Fit the multivariate regression model
+X = cell(n,1);
+for i = 1:n
+	X{i} = [eye(d) repmat(x(i),d,1)];
+end
+
+% Sigma contains estimates of the -by- variance-covariance matrix , for the between-region concurrent correlations
+% beta contains estimates of the -dimensional coefficient vector
+[beta,Sigma] = mvregress(X,Y); 
+
+%% Plot the fitted regression model.
+
+B = [beta(1:d)';repmat(beta(end),1,d)];
+xx = linspace(.5,3.5)';
+fits = [ones(size(xx)),xx]*B;
+
+figure;
+h = plot(x,Y,'x',xx,fits,'-');
+for i = 1:d
+	set(h(d+i),'color',get(h(i),'color'));
+end
+legend(regions,'Location','NorthWest');

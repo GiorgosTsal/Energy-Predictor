@@ -15,12 +15,12 @@ zalpha = 1.96;
 
 
 
-yM = load('../data/stocks2003.dat');
+%yM = load('../data/stocks2003.dat');
 
  rng(1);
 
 % Read the names of the stocks
-nameM = textread('../data/stock_names.dat','%s');
+%nameM = textread('../data/stock_names.dat','%s');
 %% load my dataset and convert date to number 
 name = '/energydata_complete.csv';
 filename = strcat(currdir,name)
@@ -41,7 +41,9 @@ tmpdata = table2array(data)
 yM = tmpdata';
 %% First index
 indx1 = ceil(m*rand);
-y1V = yM(:,indx1);
+%y1V = yM(:,indx1);
+y1V = yM(1,:)
+y1V = y1V'
 name1 = cell2mat(nameM(indx1,:));
 % If NaN replace them with interpolated values
 i1V = find(isnan(y1V));
@@ -67,7 +69,9 @@ title(sprintf('autocorrelation of variable %s',name1))
 
 %% Second index
 indx2 = ceil(m*rand);
-y2V = yM(:,indx2);
+%y2V = yM(:,indx2);
+y2V = yM(1,:)
+y2V = y2V'
 name2 = cell2mat(nameM(indx2,:));
 % If NaN replace them with interpolated values
 i2V = find(isnan(y2V));

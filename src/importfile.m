@@ -125,4 +125,4 @@ data.Visibility = cell2mat(rawNumericColumns(:, 25));
 data.Tdewpoint = cell2mat(rawNumericColumns(:, 26));
 data.rv1 = cell2mat(rawNumericColumns(:, 27));
 data.rv2 = cell2mat(rawNumericColumns(:, 28));
-data(1,:) = [];
+data(1,:) = []; % delete first row
