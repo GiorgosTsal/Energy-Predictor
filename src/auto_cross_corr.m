@@ -10,17 +10,10 @@ maxtau2 = 10;
 p = 1;
 M = 100;
 alpha = 0.05;
-% zalpha = norminv(1-alpha/2);
 zalpha = 1.96;
 
+rng(1);
 
-
-%yM = load('../data/stocks2003.dat');
-
- rng(1);
-
-% Read the names of the stocks
-%nameM = textread('../data/stock_names.dat','%s');
 %% load my dataset and convert date to number 
 name = '/energydata_complete.csv';
 filename = strcat(currdir,name)
@@ -33,6 +26,7 @@ ts = ts - ts(1); % subtract sample one from all the other time samples(to start 
 data.date = ts;
 disp('Hi');
 
+%assign variable names
 nameM = data.Properties.VariableNames;
 nameM = nameM';
 tmpdata = table2array(data)

@@ -6,12 +6,10 @@ fprintf(currdir);
 userpath(currdir); %set working directory to current dir of .m file
 
 %% load data
-%loaddata;
 name = '/energydata_complete.csv';
 filename = strcat(currdir,name)
 data = importfile(filename)
 disp('Hi0');
-disp('Hi00');
 
 %% Plot all variables with respect to time
 figure;
@@ -36,8 +34,8 @@ rng(1);
 disp('Hi2');
 %% Select subset of K genes (K<=m)
 iV = randperm(m);
-data2 = data(iV(1:K),:);
-tmpdata = table2array(data2)
+tmpdata = data(iV(1:K),:);
+tmpdata = table2array(tmpdata)
 disp('Hi3');
 %% Compute the correlation matrix and the significance (p-values)
 [ccM,p1M] = corrcoef(tmpdata); % compute the correlation coefficients and p-values of my matrix
@@ -63,7 +61,7 @@ if nonparametric
     end
 end
 tit1txt = sprintf('R_{XY}');
-C = {'1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28', '29'}
+C = data.Properties.VariableNames;
 h1 = plotnetworktitle(abs(ccM),[], C,tit1txt,1,0,maxwordlength);
 
 adj1M = p1M < alpha;
@@ -88,18 +86,3 @@ if nonparametric
 end
 
 disp('Hi4');
-%% Explore autocorrelations and cross correlations in greek stocks
-maxtau = 20;
-maxtau2 = 10;
-p = 1;
-M = 100;
-alpha = 0.05;
-% zalpha = norminv(1-alpha/2);
-zalpha = 1.96;
-
-yM = load('../data/stocks2003.dat');
-[n,m]=size(yM);
-% rng(1);
-
-% Read the names of the stocks
-nameM = textread('../data/stock_names.dat','%s');
