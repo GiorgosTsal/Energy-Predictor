@@ -16,17 +16,9 @@ ts = ts*24*60*60; % tranform date to seconds
 ts = ts - ts(1); % subtract sample one from all the other time samples(to start from zero secs)
 data.date = ts;
 
-
-% Load the sample data.
-load('flu')
-
 tmpdata = table2array(data);
 
 %% Extract the response and predictor data
-Y = double(flu(:,2:end-1));
-[n,d] = size(Y);
-x = flu.WtdILI;
-%% set them to check
 target = tmpdata(:,2); % set appliance as target
 tmpdata(:,2) = []; % delete target col
 disp("ha");
@@ -39,7 +31,6 @@ x = target
 disp('Hi');
 %% Plot the flu data, grouped by region
 figure;
-%regions = flu.Properties.VarNames(2:end-1);
 plot(x,Y,'x')
 legend(regions,'Location','NorthWest')
 
@@ -52,7 +43,16 @@ end
 
 % Sigma contains estimates of the -by- variance-covariance matrix , for the between-region concurrent correlations
 % beta contains estimates of the -dimensional coefficient vector
-[beta,Sigma] = mvregress(X,Y); 
+[beta,Sigma] = mvregress(X,Y); % will throw error :
+                                % handle not positive covariance mvregress
+% The covariance matrix is not positive definite because it is singular.
+% That means that at least one of your variables can be expressed as a linear 
+% combination of the others. You do not need all the variables as the value of 
+% at least one can be determined from a subset of the others. I would suggest
+% adding variables sequentially and checking the covariance matrix at each step. 
+% If a new variable creates a singularity drop it and go on the the next one.
+% Eventually you should have a subset of variables with a postive definite 
+% covariance matrix.
 
 %% Plot the fitted regression model.
 

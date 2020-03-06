@@ -1,4 +1,4 @@
-% Lab7: Granger causality index (GCI) in EEG or financial data and networks
+% Granger causality index (GCI) in EEG or financial data and networks
 %% clear env,get and set current directory
 clc
 clear
@@ -19,37 +19,31 @@ disp('Hi');
 
 %% load data and set parameters
 alpha = 0.05; % significance level
-K = 5; % Number of variables (time series) to use from the set of variables read in.
+K = 10; % Number of variables (time series) to use from the set of variables read in.
 P = 10; % The order of the VAR model used for the computation of the 
         % Granger causality index (GCI) 
 GCIthresh = 0.1; 
-taus = 1/100; % The sampling time
+taus = 1; % The sampling time
 rng(1);
 fignow = 0;
 
-xM = load('../data/E58.dat');
-xM = xM(1:1000,1:end-1); % The last channel is ECG
+tmpdata = table2array(data);
+tmpdata = tmpdata';
+xM = tmpdata
 [n,m]=size(xM);
 % Read the names of the channels
-[numM,txtC] = xlsread('../data/Channel25Names.xls');
-iV = randperm(m);
+iV = randperm(n);
 % iV = [1:m];
 
 
-txtC = 
+txtC = data.Properties.VariableNames;
+txtC = txtC';
 
 xM = xM(:,iV(1:K));
 nameM = txtC(iV(1:K),:);
 
-% xM = load('stocks2003.dat');
-% [n,m]=size(xM);
-% % Read the names of the stocks
-% nameM = textread('stock_names.dat','%s');
-% nameM = nameM(iV(1:K),:);
-% iV = randperm(m);
-% % iV = [1:m];
-% xM = xM(:,iV(1:K));
-
+disp("Hi there");
+disp("Hi there2");
 %% If NaN replace them with interpolated values for each time series
 for i=1:K
     i1V = find(isnan(xM(:,i)));
@@ -60,7 +54,7 @@ for i=1:K
 end
 
 % Use log returns
-% xM = log(xM(2:n,:))-log(xM(1:n-1,:));
+xM = log(xM(2:n,:))-log(xM(1:n-1,:));
 
 %% Show the multivariate time series
 plotmts(xM,1,0,K,taus,nameM,fignow+1);

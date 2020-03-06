@@ -14,7 +14,7 @@ disp('Hi0');
 disp('Hi00');
 
 %% Plot all variables with respect to time
-figure(10);
+figure;
 stackedplot(data)
 %% convert date to number 
 data.date = datenum(data.date, 'yyyy-mm-dd HH:MM:SS');

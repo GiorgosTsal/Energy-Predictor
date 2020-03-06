@@ -14,31 +14,28 @@ data = importfile(filename)
 data.date = datenum(data.date, 'yyyy-mm-dd HH:MM:SS');
 ts = data.date; % temp variable 
 ts = ts*24*60*60; % tranform date to seconds
-ts = ts - ts(1); % subtract sample one from all the other time samples(to start from zero secs)
+ts = ts - ts(1); % subtract sample one from all the other time samples
+                 %(to start from zero secs)
 data.date = ts;
 disp('Hi');
 
-%% load data and set parameters
+%% set parameters
 alpha = 0.05; % significance level
 K = 5; % Number of variables (time series) to use from the set of variables read in.
 P = 10; % The order of the VAR model used for the computation of the 
         % conditional Granger causality index (CGCI) 
+        % var is vector auto regression=>https://en.wikipedia.org/wiki/Vector_autoregression
 CGCIthresh = 0.1; 
-taus = 1/100; % The sampling time
+taus = 600; % The sampling time
 rng(1);
 fignow = 5;
 
-xM = load('../data/E58.dat');
-xM = xM(1:1000,1:end-1); % The last channel is ECG
 tmpdata = table2array(data);
 tmpdata = tmpdata';
 xM = tmpdata
 [n,m]=size(xM);
 % Read the names of the channels
-[numM,txtC] = xlsread('../data/Channel25Names.xls');
 iV = randperm(n);
-% iV = [1:m];
-
 
 txtC = data.Properties.VariableNames;
 txtC = txtC';
@@ -46,15 +43,6 @@ txtC = txtC';
 xM = xM(:,iV(1:K));
 nameM = txtC(iV(1:K),:);
 
-
-% xM = load('stocks2003.dat');
-% [n,m]=size(xM);
-% % Read the names of the stocks
-% nameM = textread('stock_names.dat','%s');
-% nameM = nameM(iV(1:K),:);
-% iV = randperm(m);
-% % iV = [1:m];
-% xM = xM(:,iV(1:K));
 
 % If NaN replace them with interpolated values for each time series
 for i=1:K
@@ -66,7 +54,7 @@ for i=1:K
 end
 
 % Use log returns
-% xM = log(xM(2:n,:))-log(xM(1:n-1,:));
+xM = log(xM(2:n,:))-log(xM(1:n-1,:));
 
 %% Show the multivariate time series
 plotmts(xM,1,0,K,taus,nameM,fignow+1);
