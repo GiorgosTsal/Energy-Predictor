@@ -12,7 +12,7 @@ data = importfile(filename)
 disp('Hi0');
 
 %% Plot all variables with respect to time
-figure;
+figure(20);
 stackedplot(data)
 %% convert date to number 
 data.date = datenum(data.date, 'yyyy-mm-dd HH:MM:SS');
@@ -26,7 +26,7 @@ disp('Hi');
 alpha = 0.05;
 K = 29;
 nonparametric = 1; 
-rthresh = 0.2;
+rthresh = 0.1;
 M = 100;    
 maxwordlength = 30;
 rng(1);

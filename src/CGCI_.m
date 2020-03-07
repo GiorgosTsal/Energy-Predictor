@@ -21,11 +21,11 @@ disp('Hi');
 
 %% set parameters
 alpha = 0.05; % significance level
-K = 5; % Number of variables (time series) to use from the set of variables read in.
+K = 15; % Number of variables (time series) to use from the set of variables read in.
 P = 10; % The order of the VAR model used for the computation of the 
         % conditional Granger causality index (CGCI) 
         % var is vector auto regression=>https://en.wikipedia.org/wiki/Vector_autoregression
-CGCIthresh = 0.1; 
+CGCIthresh = 0.3; 
 taus = 600; % The sampling time
 rng(1);
 fignow = 5;
@@ -62,7 +62,18 @@ plotmts(xM,1,0,K,taus,nameM,fignow+1);
 %% For each pair of channels compute the Granger causality index (GCI) and 
 % form the GCI-causality matrix
 fprintf('Computes the CGCI (p=%d) for all %d variables...\n',P,K);
+% INPUTS
+% - xM          : the vector time series of size n x K 
+% - m           : the order of the restricted and unrestricted VAR model 
+% - maketest    : If 1 make parametric significance test and give out 
+%                 the p-value for each pair of variables
 [CGCIM,pCGCIM] = CGCI(xM,P,1);
+% OUTPUTS
+% - CGCIM       : The matrix of size K x K of the CGCI values. Each cell
+%                 (i,j) has the value CGCI(Xi->Xj). 
+% - pCGCIM      : The matrix of size K x K of the p-values of the 
+%                 parametric significance test for CGCI (using the F-statistic, see Econometric 
+%                 Analysis, Greene, 7th Edition, Sec 5.5.2)
 
 %% Plot the CGCI-causality network
 % The network of weighted connections given by CGCI_{X->Y}(P)
