@@ -34,9 +34,10 @@ nameM = nameM';
 
 for i=1:width(data)
     makis = cell2mat(nameM(i,:));
-    title(makis)
-    figure(i);
+    title(makis)  
+    h = figure(i);
     histogram(tmpdata(:,i))
+    saveas(h,makis,'png')
 end
 % % Histogram with a distribution fit
 % for i=1:width(data)
