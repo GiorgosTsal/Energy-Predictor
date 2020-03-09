@@ -33,3 +33,6 @@ for i=1:29
     figure(i);
     histogram(tmpdata(:,i))
 end
+
+%% plot correlation between all variables with each other(lags AF)
+%corrplot(data)
