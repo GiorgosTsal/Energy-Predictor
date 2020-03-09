@@ -17,16 +17,19 @@ ts = ts - ts(1); % subtract sample one from all the other time samples(to start 
 data.date = ts;
 
 tmpdata = table2array(data);
-
+tmpdata(:,1) = [] % remove col with time
+target = tmpdata(:,1); % set appliance as target
+tmpdata(:,1) = [] % remove target col(appliances)
+tmpdata(:,1) = [] % remove lights col
+tmpdata = normalize(tmpdata) % necessary to normalize data before performing PCA. 
+                             % all variables have the same standard deviation
 %% Implement dimensionality reduction via pca 
-numberOfDimensions = 6;
-coeff = pca(tmpdata);
+numberOfDimensions = 3;
+[coeff, score, latent, tsquared, explained] = pca(tmpdata);
 reducedDimension = coeff(:,1:numberOfDimensions);
 reducedData = tmpdata * reducedDimension;
 tmpdata = reducedData;
 %% Extract the response and predictor data
-target = tmpdata(:,2); % set appliance as target
-tmpdata(:,2) = []; % delete target col
 disp("ha");
 
 regions = data.Properties.VariableNames;

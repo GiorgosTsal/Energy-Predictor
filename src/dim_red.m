@@ -28,11 +28,22 @@ reducedDimension = coeff(:,1:numberOfDimensions);
 reducedData = tmpdata * reducedDimension;
 
 %% Plot the distribution of features
+%assign variable names
+nameM = data.Properties.VariableNames;
+nameM = nameM';
 
-for i=1:29
+for i=1:width(data)
+    makis = cell2mat(nameM(i,:));
+    title(makis)
     figure(i);
     histogram(tmpdata(:,i))
 end
-
+% % Histogram with a distribution fit
+% for i=1:width(data)
+%     makis = cell2mat(nameM(i,:));
+%     title(makis)
+%     figure(i);
+%     histfit(tmpdata(:,i))
+% end
 %% plot correlation between all variables with each other(lags AF)
 %corrplot(data)
