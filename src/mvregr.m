@@ -18,18 +18,25 @@ data.date = ts;
 
 tmpdata = table2array(data);
 
+%% Implement dimensionality reduction via pca 
+numberOfDimensions = 6;
+coeff = pca(tmpdata);
+reducedDimension = coeff(:,1:numberOfDimensions);
+reducedData = tmpdata * reducedDimension;
+tmpdata = reducedData;
 %% Extract the response and predictor data
 target = tmpdata(:,2); % set appliance as target
 tmpdata(:,2) = []; % delete target col
 disp("ha");
 
 regions = data.Properties.VariableNames;
-
+regions = regions(:,1:numberOfDimensions);
 Y = tmpdata
 x = target
-[n,d] = size(Y);
+[n,d] = size(tmpdata);
 disp('Hi');
-%% Plot the flu data, grouped by region
+
+%% Plot the data
 figure;
 plot(x,Y,'x')
 legend(regions,'Location','NorthWest')
@@ -43,7 +50,7 @@ end
 
 % Sigma contains estimates of the -by- variance-covariance matrix , for the between-region concurrent correlations
 % beta contains estimates of the -dimensional coefficient vector
-[beta,Sigma] = mvregress(X,Y); % will throw error :
+[beta,Sigma] = mvregress(X,Y); % will throw error : 
                                 % handle not positive covariance mvregress
 % The covariance matrix is not positive definite because it is singular.
 % That means that at least one of your variables can be expressed as a linear 
@@ -53,7 +60,7 @@ end
 % If a new variable creates a singularity drop it and go on the the next one.
 % Eventually you should have a subset of variables with a postive definite 
 % covariance matrix.
-
+% DONE
 %% Plot the fitted regression model.
 
 B = [beta(1:d)';repmat(beta(end),1,d)];

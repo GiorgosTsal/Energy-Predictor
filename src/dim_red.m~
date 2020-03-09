@@ -27,9 +27,3 @@ coeff = pca(tmpdata);
 reducedDimension = coeff(:,1:numberOfDimensions);
 reducedData = tmpdata * reducedDimension;
 
-%% Plot the distribution of features
-
-for i=1:29
-    figure(i);
-    histogram(tmpdata(:,i))
-end
