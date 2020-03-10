@@ -23,10 +23,10 @@ disp('Hi');
 
 %% load data and set parameters
 alpha = 0.05; % significance level
-K = 8; % Number of variables (time series) to use from the set of variables read in.
+K = 26; % Number of variables (time series) to use from the set of variables read in.
 P = 10; % The order of the VAR model used for the computation of the 
         % Granger causality index (GCI) 
-GCIthresh = 0.01; 
+GCIthresh = 0.1; 
 taus = 600; % The sampling time
 rng(1);
 fignow = 0;
