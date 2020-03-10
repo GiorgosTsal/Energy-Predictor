@@ -13,17 +13,20 @@ alpha = 0.05;
 zalpha = 1.96;
 
 rng(1);
-
 %% load my dataset and convert date to number 
 name = '/energydata_complete.csv';
 filename = strcat(currdir,name)
 data = importfile(filename)
 
-data.date = datenum(data.date, 'yyyy-mm-dd HH:MM:SS');
-ts = data.date; % temp variable 
-ts = ts*24*60*60; % tranform date to seconds
-ts = ts - ts(1); % subtract sample one from all the other time samples(to start from zero secs)
-data.date = ts;
+data(:,1) = []; %remove col with timestamps
+data(:,end) = []; %remove ranodm var1
+data(:,end) = []; %remove random var2
+
+% data.date = datenum(data.date, 'yyyy-mm-dd HH:MM:SS');
+% ts = data.date; % temp variable 
+% ts = ts*24*60*60; % tranform date to seconds
+% ts = ts - ts(1); % subtract sample one from all the other time samples(to start from zero secs)
+% data.date = ts;
 disp('Hi');
 
 %assign variable names
