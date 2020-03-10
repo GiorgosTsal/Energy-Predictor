@@ -1,4 +1,5 @@
-% Granger causality index (GCI) in EEG or financial data and networks
+% Lab7: Granger causality index (GCI) in EEG or financial data
+% and networks
 %% clear env,get and set current directory
 clc
 clear
@@ -9,52 +10,33 @@ userpath(currdir) %set working directory to current dir of .m file
 name = '/energydata_complete.csv';
 filename = strcat(currdir,name)
 data = importfile(filename)
-
 data(:,1) = []; %remove col with timestamps
 data(:,end) = []; %remove ranodm var1
 data(:,end) = []; %remove random var2
-
-% data.date = datenum(data.date, 'yyyy-mm-dd HH:MM:SS');
-% ts = data.date; % temp variable 
-% ts = ts*24*60*60; % tranform date to seconds
-% ts = ts - ts(1); % subtract sample one from all the other time samples(to start from zero secs)
-% data.date = ts;
-disp('Hi');
-
-%% load data and set parameters
+tmpdata = table2array(data);
+%% parameter set
 alpha = 0.05; % significance level
-K = 8; % Number of variables (time series) to use from the set of variables read in.
+K = 5; % Number of variables (time series) to use from the set of variables read in.
 P = 10; % The order of the VAR model used for the computation of the 
         % Granger causality index (GCI) 
-GCIthresh = 0.01; 
-taus = 600; % The sampling time
+GCIthresh = 0.1; 
+taus = 1/100; % The sampling time
 rng(1);
 fignow = 0;
 
-tmpdata = table2array(data);
-% tmpdata(:,1) = [];
-%tmpdata = tmpdata';
-xM = tmpdata;
+xM = tmpdata';
+%xM = xM(1:1000,1:end-1); % The last channel is ECG
 [n,m]=size(xM);
 % Read the names of the channels
-iV = randperm(m);
-% iV = [1:m];
-
-
 txtC = data.Properties.VariableNames;
 txtC = txtC';
-%xM = xM';
-
-xM = xM(:,iV(1:K));
-nameM = txtC(iV(1:K),:);
-%nameM = txtC(:,iV(1:K));
+iV = randperm(m);
+% iV = [1:m];
 %xM = xM(:,iV(1:K));
+nameM = txtC(iV(1:K),:);
 
-% nameM=nameM'
 
-disp("Hi there");
-disp("Hi there2");
-%% If NaN replace them with interpolated values for each time series
+% If NaN replace them with interpolated values for each time series
 for i=1:K
     i1V = find(isnan(xM(:,i)));
     if ~isempty(i1V)
@@ -64,10 +46,11 @@ for i=1:K
 end
 
 % Use log returns
-%xM = log(xM(2:n,:))-log(xM(1:n-1,:));
+% xM = log(xM(2:n,:))-log(xM(1:n-1,:));
 
 %% Show the multivariate time series
-% plotmts(xM,1,0,K,taus,nameM,fignow+1);
+plotmts(xM,1,0,K,taus,nameM,fignow+1);
+
 %% For each pair of channels compute the Granger causality index (GCI) and 
 % form the GCI-causality matrix
 fprintf('Computes the GCI (p=%d) for all %d variables...\n',P,K);
