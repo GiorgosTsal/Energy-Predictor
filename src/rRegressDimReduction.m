@@ -43,7 +43,7 @@ xTrainM=dataTrain;
 [n, p] = size(xTrainM);
 %% Generate response data Y = X * beta + eps , where beta has just a
 % number dtrue of nonzero components, and the noise eps is normal.
-dtrue = 10;
+dtrue = 1;
 %iV = randperm(p);
 iV = (1:p)';
 betaV = zeros(p,1);
