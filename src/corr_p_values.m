@@ -5,26 +5,32 @@ currdir = pwd;
 fprintf(currdir);
 userpath(currdir); %set working directory to current dir of .m file
 
-%% load data
+%% load my dataset and convert date to number 
 name = '/energydata_complete.csv';
 filename = strcat(currdir,name)
 data = importfile(filename)
-disp('Hi0');
-
-%% Plot all variables with respect to time
-figure(20);
-stackedplot(data)
-%% convert date to number 
 data.date = datenum(data.date, 'yyyy-mm-dd HH:MM:SS');
 ts = data.date; % temp variable 
 ts = ts*24*60*60; % tranform date to seconds
 ts = ts - ts(1); % subtract sample one from all the other time samples(to start from zero secs)
 data.date = ts;
+%% Plot all variables with respect to time
+figure(20);
+stackedplot(data)
 disp('Hi');
-
+% xTrainM = table2array(data);
+% xTrainM(:,1) = []
+% xTrainM(:,end) = []
+% xTrainM(:,end) = []
+% [n, p] = size(xTrainM)
+%%
+tmpdata = table2array(data);
+tmpdata(:,1) = []; %delete date
+tmpdata(:,end) = []; %del rand var 1
+tmpdata(:,end) = []; %del rand var 2
 %% set parameters
 alpha = 0.05;
-K = 29;
+K = 26;
 nonparametric = 1; 
 rthresh = 0.1;
 M = 100;    
@@ -34,8 +40,7 @@ rng(1);
 disp('Hi2');
 %% Select subset of K genes (K<=m)
 iV = randperm(m);
-tmpdata = data(iV(1:K),:);
-tmpdata = table2array(tmpdata)
+tmpdata = tmpdata(iV(1:K),:);
 disp('Hi3');
 %% Compute the correlation matrix and the significance (p-values)
 [ccM,p1M] = corrcoef(tmpdata); % compute the correlation coefficients and p-values of my matrix

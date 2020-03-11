@@ -23,14 +23,7 @@ tmpdata = table2array(data);
 tmpdata(:,1) = [];
 tmpdata(:,end) = [];
 tmpdata(:,end) = [];
-%% split
-[m,n] = size(tmpdata) ;
-P = 0.70 ;
-idx = randperm(m)  ;
-dataTrain = tmpdata(idx(1:round(P*m)),:) ; 
-dataTest = tmpdata(idx(round(P*m)+1:end),:) ;
-
-disp('john');
+ccccc
 %% kou
 % set target 
 yTrainM=dataTrain(:,1); % target energy from appliances

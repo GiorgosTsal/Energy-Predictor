@@ -1,31 +1,66 @@
 % This example shows dimension reduction in low and high-dimensional
 % regression (discards unnecessary predictors). After estimating the
 % regression model it uses it to make predictions in a test data matrix X
+%% clear env,get and set current directory
+clc
+clear
+currdir = pwd
+fprintf(currdir)
+userpath(currdir) %set working directory to current dir of .m file
+%% load my dataset and convert date to number 
+name = '/energydata_complete.csv';
+filename = strcat(currdir,name)
+data = importfile(filename)
+data.date = datenum(data.date, 'yyyy-mm-dd HH:MM:SS');
+ts = data.date; % temp variable 
+ts = ts*24*60*60; % tranform date to seconds
+ts = ts - ts(1); % subtract sample one from all the other time samples(to start from zero secs)
+data.date = ts;
+disp('Hi');
+% xTrainM = table2array(data);
+% xTrainM(:,1) = []
+% xTrainM(:,end) = []
+% xTrainM(:,end) = []
+% [n, p] = size(xTrainM)
+tmpdata = table2array(data);
+tmpdata(:,1) = [];
+tmpdata(:,end) = [];
+tmpdata(:,end) = [];
+%% split
+[m,n] = size(tmpdata) ;
+P = 0.70 ;
+idx = randperm(m)  ;
+dataTrain = tmpdata(idx(1:round(P*m)),:) ; 
+dataTest = tmpdata(idx(round(P*m)+1:end),:) ;
+
+disp('john');
+%% set target
+yV=dataTrain(:,1); % target energy from appliances
+dataTrain(:,1)=[];
+xM=dataTrain;
+
+ytestV=dataTest(:,1); % target energy from appliances
+dataTest(:,1)=[];
+xtestM=dataTest;
 %% Generate n samples of p-dimensional artificial data X from exponential 
 % distributions with various means.
 rng(3,'twister') % For reproducibility
-n = 100;
-p = 10;
-ntest = 100;
-% xM = zeros(n,p);
-% for ii = 1:p
-%     xM(:,ii) = exprnd(ii,n,1);
-% end
-rhoM = gallery('randcorr',p);
-xM = mvnrnd(zeros(p,1),rhoM,n);
-xtestM = mvnrnd(zeros(p,1),rhoM,ntest);
-% xM = mvnrnd(zeros(p,1),eye(p,p),n);
-% xtestM = mvnrnd(zeros(p,1),eye(p,p),ntest);
+[n, p] = size(xM);
+ntest = length(ytestV);
+
+gallery('randcorr',p);
+%xM = mvnrnd(zeros(p,1),rhoM,n);
+%xtestM = mvnrnd(zeros(p,1),rhoM,ntest);
+
 
 %% Generate response data Y = X * beta + eps , where beta has just a
 % number dtrue of nonzero components, and the noise eps is normal.
-dtrue = 3;
-%iV = randperm(p);
+dtrue = 20;
 iV = (1:p)';
 betaV = zeros(p,1);
 betaV(iV(1:dtrue)) = (2*unidrnd(2,dtrue,1)-3).*(round(4*rand(dtrue,1))+1);
-yV = xM*betaV + 1*randn(n,1);
-ytestV = xtestM*betaV + 1*randn(ntest,1);
+%yV = xM*betaV + 1*randn(n,1);
+%ytestV = xtestM*betaV + 1*randn(ntest,1);
 d = dtrue; % The dimension reduction.
 
 TSS = sum((yV-mean(yV)).^2);
@@ -42,6 +77,11 @@ yctestV = ytestV - mytest;
 [uM,sigmaM,vM] = svd(xcM,'econ');
 r = size(sigmaM,1);
 
+%% customies
+xcM = xM;
+xctestM = xtestM;
+ycV = yV;
+yctestV = ytestV;
 %% OLS  
 bOLSV = vM * inv(sigmaM) * uM'* ycV;
 % yfitOLSV = xcM * bOLSV + my; 
