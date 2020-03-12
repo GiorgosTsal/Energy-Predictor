@@ -24,7 +24,7 @@ rng(1);
 name = '/energydata_complete.csv';
 filename = strcat(currdir,name)
 data = importfile(filename)
-data1=data(1:6*24*63, :)
+data1=data(1:6*24*63, :) % first 2,5 months (4.5months/2)
 data2=data(6*24*63+1:6*24*63*2,:)
 
 data1.date = datenum(data1.date, 'yyyy-mm-dd HH:MM:SS');

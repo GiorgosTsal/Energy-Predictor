@@ -12,7 +12,6 @@ userpath(currdir) %set working directory to current dir of .m file
 name = '/energydata_complete.csv';
 filename = strcat(currdir,name)
 data = importfile(filename)
-data=data(1:6*24*63, :); % first 2,5 months (4.5months/2)
 data.date = datenum(data.date, 'yyyy-mm-dd HH:MM:SS');
 ts = data.date; % temp variable 
 ts = ts*24*60*60; % tranform date to seconds
@@ -25,11 +24,9 @@ disp('Hi');
 % xTrainM(:,end) = []
 % [n, p] = size(xTrainM)
 tmpdata = table2array(data);
-% tmpdata(:,1) = []; % remove first row
-% tmpdata(:,end) = [];
-% tmpdata(:,end) = [];
-tmpdata = tmpdata(:,2:end); % remove first column(date)
-tmpdata = tmpdata(:,1:(end-2)); % remove 2 last cols (random var 1 and random var 2)
+tmpdata(:,1) = []; 
+tmpdata(:,end) = [];
+tmpdata(:,end) = [];
 %% split
 [m,n] = size(tmpdata);
 P = 0.70;
@@ -42,8 +39,8 @@ dataTest = tmpdata((round(P*m)+1:end),:);
 disp('john');
 %% set target
 yV=dataTrain(:,1); % target energy from appliances
-xM = dataTrain(:,2:end); % without first column target(appliances)
-
+dataTrain(:,1)=[];
+xM=dataTrain;
 
 % [rows, columns] = size(xM);
 % % remove autocorreletions
