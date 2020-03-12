@@ -39,6 +39,14 @@ yV=dataTrain(:,1); % target energy from appliances
 dataTrain(:,1)=[];
 xM=dataTrain;
 
+% [rows, columns] = size(xM);
+% % remove autocorreletions
+% for i=1:columns
+%     vector = xM(:,i);
+%     xM(:,i) = fitAR(vector,1);
+% end
+% yV = fitAR(yV, 1);
+
 ytestV=dataTest(:,1); % target energy from appliances
 dataTest(:,1)=[];
 xtestM=dataTest;
@@ -55,7 +63,7 @@ gallery('randcorr',p);
 
 %% Generate response data Y = X * beta + eps , where beta has just a
 % number dtrue of nonzero components, and the noise eps is normal.
-dtrue = 20;
+dtrue = 3;
 iV = (1:p)';
 betaV = zeros(p,1);
 betaV(iV(1:dtrue)) = (2*unidrnd(2,dtrue,1)-3).*(round(4*rand(dtrue,1))+1);
@@ -77,11 +85,11 @@ yctestV = ytestV - mytest;
 [uM,sigmaM,vM] = svd(xcM,'econ');
 r = size(sigmaM,1);
 
-%% customies
-xcM = xM;
-xctestM = xtestM;
-ycV = yV;
-yctestV = ytestV;
+% %% customies
+% xcM = xM;
+% xctestM = xtestM;
+% ycV = yV;
+% yctestV = ytestV;
 %% OLS  
 bOLSV = vM * inv(sigmaM) * uM'* ycV;
 % yfitOLSV = xcM * bOLSV + my; 
