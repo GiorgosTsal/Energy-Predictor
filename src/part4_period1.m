@@ -2,97 +2,85 @@
 % regression (discards unnecessary predictors). After estimating the
 % regression model it uses it to make predictions in a test data matrix X
 %% clear env,get and set current directory
-% run: close all to close all figures
 clc
 clear
 currdir = pwd
 fprintf(currdir)
 userpath(currdir) %set working directory to current dir of .m file
-%% load my dataset and convert date to number 
+%% load my dataset and convert date to number
+
+d=5;
+targetIdx=8;
 name = '/energydata_complete.csv';
 filename = strcat(currdir,name)
-data = importfile(filename)
-data.date = datenum(data.date, 'yyyy-mm-dd HH:MM:SS');
-ts = data.date; % temp variable 
+
+
+data = importfile(filename);
+data1=data(1:6*24*63, :);
+data2=data(6*24*63+1:6*24*63*2,:);
+
+data1.date = datenum(data1.date, 'yyyy-mm-dd HH:MM:SS');
+ts = data1.date; % temp variable 
 ts = ts*24*60*60; % tranform date to seconds
 ts = ts - ts(1); % subtract sample one from all the other time samples(to start from zero secs)
-data.date = ts;
+data1.date = ts;
+
+%assign variable names
+nameM = data1.Properties.VariableNames;
+
 disp('Hi');
-% xTrainM = table2array(data);
-% xTrainM(:,1) = []
-% xTrainM(:,end) = []
-% xTrainM(:,end) = []
-% [n, p] = size(xTrainM)
-tmpdata = table2array(data);
-tmpdata(:,1) = []; 
-tmpdata(:,end) = [];
-tmpdata(:,end) = [];
-%% split
-[m,n] = size(tmpdata);
-P = 0.70;
-dataTrain = tmpdata(1:round(P*m),:);
-dataTest = tmpdata((round(P*m)+1:end),:);
-% idx = randperm(m)  ;
-% dataTrain = tmpdata(idx(1:round(P*m)),:) ; 
-% dataTest = tmpdata(idx(round(P*m)+1:end),:) ;
+p = 10;
+xM1 = table2array(data1);
+xM1(:,1) = []
+[n,m] = size(xM1);
 
-disp('john');
-%% set target
-yV=dataTrain(:,1); % target energy from appliances
-dataTrain(:,1)=[];
-xM=dataTrain;
+trainIdx=round(0.7*n);
+trainData=xM1(1:trainIdx,:);
 
-% [rows, columns] = size(xM);
-% % remove autocorreletions
-% for i=1:columns
-%     vector = xM(:,i);
-%     xM(:,i) = fitAR(vector,1);
-% end
-% yV = fitAR(yV, 1);
+testData=xM1(trainIdx+1:end,:);
+yTrain=trainData(:,targetIdx);
+yV=yTrain;
 
-ytestV=dataTest(:,1); % target energy from appliances
-dataTest(:,1)=[];
-xtestM=dataTest;
-%% Generate n samples of p-dimensional artificial data X from exponential 
-% distributions with various means.
-rng(3,'twister') % For reproducibility
-[n, p] = size(xM);
-ntest = length(ytestV);
+yTest=testData(:,targetIdx);
+trainData(:,targetIdx)=[];
+testData(:,targetIdx)=[];
 
-gallery('randcorr',p);
-%xM = mvnrnd(zeros(p,1),rhoM,n);
-%xtestM = mvnrnd(zeros(p,1),rhoM,ntest);
+[nTrain,m] = size(trainData);
+[nTest,m] = size(testData);
+
+xM=trainData;
+ntest=nTest;
+xtestM=testData;
+ytestV=yTest;
 
 
-%% Generate response data Y = X * beta + eps , where beta has just a
-% number dtrue of nonzero components, and the noise eps is normal.
-dtrue = 3;
-iV = (1:p)';
-betaV = zeros(p,1);
-betaV(iV(1:dtrue)) = (2*unidrnd(2,dtrue,1)-3).*(round(4*rand(dtrue,1))+1);
-%yV = xM*betaV + 1*randn(n,1);
-%ytestV = xtestM*betaV + 1*randn(ntest,1);
-d = dtrue; % The dimension reduction.
 
-TSS = sum((yV-mean(yV)).^2);
-mxV = mean(xM);
-xcM = xM - repmat(mxV,n,1); % centered data matrix
-my = mean(yV);
-ycV = yV - my;
-TSStest = sum((ytestV-mean(ytestV)).^2);
-mxtestV = mean(xtestM);
-xctestM = xtestM - repmat(mxtestV,ntest,1); % centered data matrix
-mytest = mean(ytestV);
-yctestV = ytestV - mytest;
+TSStrain = sum((yTrain-mean(yTrain)).^2);
+meanTrainData = mean(trainData);
+mxV=meanTrainData;
+centerTrainData = trainData - repmat(meanTrainData,nTrain,1); % centered data matrix
+mYTrain = mean(yTrain);
+centerYTrain = yTrain - mYTrain;
+
+TSS=TSStrain;
+
+TSStest = sum((yTest-mean(yTest)).^2);
+meanTestData = mean(testData);
+centerTestData = testData - repmat(meanTestData,nTest,1); % centered data matrix
+my = mean(yTest);
+centerYTest = yTest - my;
+
+xcM=centerTrainData;
+ycV=centerYTrain;
+
+xctestM=centerTestData;
+yctestV=centerYTest;
+
+n=nTrain;
 
 [uM,sigmaM,vM] = svd(xcM,'econ');
 r = size(sigmaM,1);
 
-% %% customies
-% xcM = xM;
-% xctestM = xtestM;
-% ycV = yV;
-% yctestV = ytestV;
 %% OLS  
 bOLSV = vM * inv(sigmaM) * uM'* ycV;
 % yfitOLSV = xcM * bOLSV + my; 
@@ -217,14 +205,11 @@ ylabel('e^*')
 title('PLS, blue->fit, red->predict')
 
 %% Ridge regression
-% [u2M,sigma2M,v2M] = svd(xcM);
-% mu = (1/(n-p)) * sum((u2M(:,p+1:n)'*ycV).^2);
 mu = RSSOLS/(n-p);
 sigmaV = diag(sigmaM);
 lambdaV = sigmaV.^2 ./ (sigmaV.^2 + mu);
 bRRV = vM * diag(lambdaV) * inv(sigmaM) * uM'* ycV;
 bRRV = [my - mxV*bRRV; bRRV];
-% bRRV = ridge(yV,xM,mu,0);
 yfitRRV = [ones(n,1) xM] * bRRV; 
 resRRV = yfitRRV - yV;     % Calculate residuals
 RSSRR = sum(resRRV.^2);
@@ -286,9 +271,9 @@ xlabel('y')
 ylabel('e^*')
 title('LASSO, blue->fit, red->predict')
 
-fprintf('\t beta \t OLS \t step \t PCR \t PLS \t RR \t LASSO \n');
+fprintf('\t OLS \t step \t PCR \t PLS \t RR \t LASSO \n');
 fprintf('\t Regression coefficient vectors \n');
-disp([[0;betaV] bOLSV bstepV bPCRV bPLSV bRRV bLASSOV])
+disp([ bOLSV bstepV bPCRV bPLSV bRRV bLASSOV])
 fprintf('\t fit R^2 \n');
 disp([NaN rsquaredOLS rsquaredstep rsquaredPCR rsquaredPLS rsquaredRR rsquaredLASSO])
 fprintf('\t predict R^2 \n');
