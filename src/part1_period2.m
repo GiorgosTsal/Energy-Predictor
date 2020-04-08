@@ -18,12 +18,13 @@ ts = ts - ts(1); % subtract sample one from all the other time samples(to start 
 data2.date = ts;
 
 tmpdata = table2array(data2);
+tmpdata = tmpdata(:,2:end); % remove first column(date)
 %% Plot the distribution of features
 %assign variable names
 nameM = data2.Properties.VariableNames;
 nameM = nameM';
-
-for i=1:width(data2)
+[n,m] = size(tmpdata);
+for i=1:m
     makis = cell2mat(nameM(i,:));
     title(makis)  
     h = figure(i);

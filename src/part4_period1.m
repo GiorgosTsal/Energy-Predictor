@@ -9,8 +9,11 @@ fprintf(currdir)
 userpath(currdir) %set working directory to current dir of .m file
 %% load my dataset and convert date to number
 
-d=5;
-targetIdx=8;
+alpha = 0.00001; % significance level
+P = 10; % The order of the VAR model used for the computation of the 
+        % conditional Granger causality index (CGCI) 
+        % var is vector auto regression=>https://en.wikipedia.org/wiki/Vector_autoregression
+targetIdx=1;
 name = '/energydata_complete.csv';
 filename = strcat(currdir,name)
 
@@ -34,6 +37,22 @@ xM1 = table2array(data1);
 xM1(:,1) = []
 [n,m] = size(xM1);
 
+
+%% Dimension Reduction 
+[CGCIM,pCGCIM] = CGCI(xM1,P,1);
+adj1M = pCGCIM < alpha;
+
+for i=m:-1:1
+ %disp(i);
+    if(adj1M(1,i)==0)
+  %      disp("einai iso me miden to:");
+   %     disp(i);
+        xM1(:,i)=[]; % delete cols for dim reduction based on CGCI adj1M and pvalues
+    end 
+end
+[n,m] = size(xM1);
+d=m-1;
+%% Split into train and test
 trainIdx=round(0.7*n);
 trainData=xM1(1:trainIdx,:);
 

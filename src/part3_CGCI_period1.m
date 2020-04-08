@@ -18,28 +18,27 @@ ts = ts*24*60*60; % tranform date to seconds
 ts = ts - ts(1); % subtract sample one from all the other time samples(to start from zero secs)
 data1.date = ts;
 
-%assign variable names
-nameM = data1.Properties.VariableNames;
-%%nameM = nameM';
 tmpdata = table2array(data1)
-
+tmpdata = tmpdata(:,2:end);
 %% set parameters
-alpha = 0.05; % significance level
+alpha = 0.00001; % significance level
 K = 26; % Number of variables (time series) to use from the set of variables read in.
 P = 10; % The order of the VAR model used for the computation of the 
         % conditional Granger causality index (CGCI) 
         % var is vector auto regression=>https://en.wikipedia.org/wiki/Vector_autoregression
-CGCIthresh = 0.1; 
+CGCIthresh = 0.01; 
 taus = 600; % The sampling time
 rng(1);
-fignow = 5;
+fignow = 1;
 
 xM = tmpdata;
 [n,m]=size(xM);
-nameM = data.Properties.VariableNames;
 
+%assign variable names
+nameM = data.Properties.VariableNames;
+nameM = nameM(:,2:end);
 %%
-for i=2:m
+for i=1:m
     i1V = find(isnan(xM(:,i)));
     if ~isempty(i1V)
         iokV = setdiff([1:n]',i1V);
@@ -74,16 +73,17 @@ else
    disp("pCGCIM is asymmetric. Answer N.");
 end
 %% plot networks
-plotnetworktitle(CGCIM,[],nameM,tit1txt,fignow+2);
+plotnetworktitle(CGCIM,[],nameM,tit1txt,fignow);
 
 adj1M = pCGCIM < alpha;
 tit2txt = sprintf('Adjacency p(CGCI_{X->Y}(%d)) < %1.2f',P,alpha);
-plotnetworktitle(adj1M,[0 1],nameM,tit2txt,fignow+3);
+plotnetworktitle(adj1M,[0 1],nameM,tit2txt,fignow+1);
 
 adjfdr1M = adjFDRmatrix(pCGCIM,alpha,2);
 tit3txt = sprintf('FDR (a=%1.3f) CGCI_{X->Y}(%d)',alpha,P);
-plotnetworktitle(adjfdr1M,[0 1],nameM,tit3txt,fignow+4);
+plotnetworktitle(adjfdr1M,[0 1],nameM,tit3txt,fignow+2);
 
 CGCIthreshM = CGCIM > CGCIthresh;
 tit4txt = sprintf('Adjacency CGCI_{X->Y}(%d) > %1.2f',P,CGCIthresh);
-plotnetworktitle(CGCIthreshM,[0 1],nameM,tit4txt,fignow+5);
+plotnetworktitle(CGCIthreshM,[0 1],nameM,tit4txt,fignow+3);
+

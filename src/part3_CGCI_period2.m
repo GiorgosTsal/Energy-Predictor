@@ -7,8 +7,8 @@ fprintf(currdir)
 userpath(currdir) %set working directory to current dir of .m file
 %% load my dataset and convert date to number 
 name = '/energydata_complete.csv';
-filename = strcat(currdir,name)
-data = importfile(filename)
+filename = strcat(currdir,name);
+data = importfile(filename);
 data1=data(1:6*24*63, :);
 data2=data(6*24*63+1:6*24*63*2,:);
 
@@ -18,13 +18,11 @@ ts = ts*24*60*60; % tranform date to seconds
 ts = ts - ts(1); % subtract sample one from all the other time samples(to start from zero secs)
 data2.date = ts;
 
-%assign variable names
-nameM = data2.Properties.VariableNames;
-%%nameM = nameM';
-tmpdata = table2array(data2)
 
+tmpdata = table2array(data2);
+tmpdata = tmpdata(:,2:end);
 %% set parameters
-alpha = 0.05; % significance level
+alpha = 0.00001; % significance level
 K = 26; % Number of variables (time series) to use from the set of variables read in.
 P = 10; % The order of the VAR model used for the computation of the 
         % conditional Granger causality index (CGCI) 
@@ -36,10 +34,11 @@ fignow = 5;
 
 xM = tmpdata;
 [n,m]=size(xM);
+%assign variable names
 nameM = data.Properties.VariableNames;
-
+nameM = nameM(:,2:end);
 %%
-for i=2:m
+for i=1:m
     i1V = find(isnan(xM(:,i)));
     if ~isempty(i1V)
         iokV = setdiff([1:n]',i1V);

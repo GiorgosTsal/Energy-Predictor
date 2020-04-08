@@ -10,7 +10,7 @@ userpath(currdir) %set working directory to current dir of .m file
 tau = 0;
 alpha = 0.05;
 K = 5;
-rthresh = 0.1;
+rthresh = 0.05;
 maxtau = 20;
 p=5;
 %% load my dataset and convert date to number 
@@ -28,8 +28,10 @@ data2.date = ts;
 
 %assign variable names
 nameM = data2.Properties.VariableNames;
+nameM = nameM(:,2:end);
 %%nameM = nameM';
 tmpdata = table2array(data2);
+tmpdata = tmpdata(:,2:end); %remove 1st column (date)
 [n,m]=size(tmpdata);
 %yM = tmpdata';
 yM=tmpdata;
@@ -39,8 +41,8 @@ K=m;
 
 % rng(1);
 
-iV = randperm(m);
-yM = yM(:,iV(1:K));
+%iV = randperm(m);
+%yM = yM(:,iV(1:K));
 
 % If NaN replace them with interpolated values for each time series
 for i=1:K
@@ -53,7 +55,7 @@ end
 
 % Use log returns
 xM=zeros(n,m-1);
-for i=2:m
+for i=1:m
     y1=yM(:,i);
     
     xM(:,i)=fitAR(y1,p);

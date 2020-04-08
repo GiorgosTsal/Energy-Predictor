@@ -33,8 +33,9 @@ data1.date = ts;
 
 %assign variable names
 nameM = data1.Properties.VariableNames;
+nameM = nameM(:,2:end); %remove 1st column (date)
 tmpdata = table2array(data1)
-
+tmpdata = tmpdata(:,2:end); %remove 1st column (date)
 [n,m]=size(tmpdata);
 yM=tmpdata;
 %% Autocorrelation for all variables with noise
@@ -50,7 +51,8 @@ for indx1 = 1:m
         y1V(i1V) = interp1(iokV,y1V(iokV),i1V,'spline');
     end
 
-    figure(2*indx1-1)
+   % figure(2*indx1-1)
+    figure;
     clf
     plot(y1V,'.-')
     xlabel('day t')
@@ -77,7 +79,8 @@ for indx1=1:m-1
         
         
         cceyV = mycrosscorr(ey1V,ey2V,maxtau2);
-        figure(10)
+        %figure(10)
+        figure;
         clf
         plot([-maxtau2:maxtau2]',cceyV,'.-')
         hold on
@@ -91,12 +94,13 @@ for indx1=1:m-1
 end
 %% Appendix
 
-%% Autocorrelation after whittening with method 1 (AR)
 %{
+%% Autocorrelation after whittening with method 1 (AR)
+
 for indx1=1:m
     y1V = yM(:,indx1);
     ey1V = fitAR(y1V,p);
-    figure(6)
+    figure;
     clf
     plot(ey1V,'.-')
     xlabel('day t')
@@ -105,7 +109,7 @@ for indx1=1:m
     title(sprintf('Variable %s, residual from AR(%d)',name1,p))
 
     acey1M = autocorrelation(ey1V,maxtau);
-    figure(7)
+    figure;
     clf
     plot(acey1M(:,1),acey1M(:,2),'.-')
     hold on
