@@ -22,7 +22,7 @@ data2.date = ts;
 tmpdata = table2array(data2);
 tmpdata = tmpdata(:,2:end);
 %% set parameters
-alpha = 0.00001; % significance level
+alpha = 0.001; % significance level
 K = 26; % Number of variables (time series) to use from the set of variables read in.
 P = 10; % The order of the VAR model used for the computation of the 
         % conditional Granger causality index (CGCI) 

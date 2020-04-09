@@ -9,11 +9,13 @@ fprintf(currdir)
 userpath(currdir) %set working directory to current dir of .m file
 %% load my dataset and convert date to number
 
-alpha =0.01; % significance level
+alpha = 0.001; % significance level
 P = 10; % The order of the VAR model used for the computation of the 
         % conditional Granger causality index (CGCI) 
         % var is vector auto regression=>https://en.wikipedia.org/wiki/Vector_autoregression
-targetIdx=1;
+
+targetIdx=3; %without the date column, 1->appliances, 2-> lights etc
+
 name = '/energydata_complete.csv';
 filename = strcat(currdir,name)
 
@@ -36,16 +38,21 @@ p = 10;
 xM1 = table2array(data1);
 xM1(:,1) = []
 [n,m] = size(xM1);
-
+%% replace 1st columns with target column with patent for ease
+if(targetIdx ~= 1)
+    firstcol = xM1(:,1);
+    tarcol = xM1(:,targetIdx);
+    xM1(:,1) = tarcol;
+    xM1(:,targetIdx) = firstcol;
+end
 
 %% Dimension Reduction 
-[CGCIM,pCGCIM] = CGCI(xM1,P,1); %dim reduction with CGCI, uncomment for CGCI
-%[CGCIM,pCGCIM] = GCI(xM1,P,1); %dim reduction with GCI, uncomment for GCI
+[CGCIM,pCGCIM] = CGCI(xM1,P,1);
 adj1M = pCGCIM < alpha;
 
 for i=m:-1:2
  %disp(i);
-    if(adj1M(i,1)==0)
+    if(adj1M(1,i)==0)
   %      disp("einai iso me miden to:");
    %     disp(i);
         xM1(:,i)=[]; % delete cols for dim reduction based on CGCI adj1M and pvalues
@@ -53,6 +60,7 @@ for i=m:-1:2
 end
 [n,m] = size(xM1);
 d=m-1;
+targetIdx = 1;
 %% Split into train and test
 trainIdx=round(0.7*n);
 trainData=xM1(1:trainIdx,:);
