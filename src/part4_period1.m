@@ -9,7 +9,7 @@ fprintf(currdir)
 userpath(currdir) %set working directory to current dir of .m file
 %% load my dataset and convert date to number
 
-alpha = 0.00001; % significance level
+alpha = 0.01; % significance level
 P = 10; % The order of the VAR model used for the computation of the 
         % conditional Granger causality index (CGCI) 
         % var is vector auto regression=>https://en.wikipedia.org/wiki/Vector_autoregression
@@ -44,7 +44,7 @@ adj1M = pCGCIM < alpha;
 
 for i=m:-1:1
  %disp(i);
-    if(adj1M(1,i)==0)
+    if(adj1M(i,1)==0)
   %      disp("einai iso me miden to:");
    %     disp(i);
         xM1(:,i)=[]; % delete cols for dim reduction based on CGCI adj1M and pvalues
