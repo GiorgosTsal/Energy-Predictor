@@ -22,14 +22,14 @@ data1.date = ts;
 nameM = data1.Properties.VariableNames;
 %%nameM = nameM';
 tmpdata = table2array(data1)
-
+tmpdata = tmpdata(:,2:end);
 %% set parameters
-alpha = 0.05; % significance level
+alpha = 0.01; % significance level
 K = 26; % Number of variables (time series) to use from the set of variables read in.
 P = 10; % The order of the VAR model used for the computation of the 
         % conditional Granger causality index (CGCI) 
         % var is vector auto regression=>https://en.wikipedia.org/wiki/Vector_autoregression
-GCIthresh = 0.1; 
+GCIthresh = 0.01; 
 taus = 600; % The sampling time
 rng(1);
 fignow = 5;
@@ -37,11 +37,11 @@ fignow = 5;
 xM = tmpdata;
 [n,m]=size(xM);
 nameM = data.Properties.VariableNames;
-
+nameM = nameM(:,2:end);
 
 %%
 
-for i=2:m
+for i=1:m
     i1V = find(isnan(xM(:,i)));
     if ~isempty(i1V)
         iokV = setdiff([1:n]',i1V);

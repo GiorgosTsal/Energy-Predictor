@@ -9,29 +9,55 @@ userpath(currdir) %set working directory to current dir of .m file
 name = '/energydata_complete.csv';
 filename = strcat(currdir,name)
 data = importfile(filename)
-data=data(1:6*24*63, :); % first 2,5 months (4.5months/2)
-data.date = datenum(data.date, 'yyyy-mm-dd HH:MM:SS');
-ts = data.date; % temp variable 
+data1=data(1:6*24*63, :);
+data2=data(6*24*63+1:6*24*63*2,:);
+data1.date = datenum(data1.date, 'yyyy-mm-dd HH:MM:SS');
+ts = data1.date; % temp variable 
 ts = ts*24*60*60; % tranform date to seconds
 ts = ts - ts(1); % subtract sample one from all the other time samples(to start from zero secs)
-data.date = ts;
+data1.date = ts;
 disp('Hi');
 % xTrainM = table2array(data);
 % xTrainM(:,1) = []
 % xTrainM(:,end) = []
 % xTrainM(:,end) = []
 % [n, p] = size(xTrainM)
-tmpdata = table2array(data);
+tmpdata = table2array(data1);
 % tmpdata(:,1) = []; % remove first row
 % tmpdata(:,end) = [];
 % tmpdata(:,end) = [];
-tmpdata = tmpdata(:,2:end); % remove first column(date)
-tmpdata = tmpdata(:,1:(end-2)); % remove 2 last cols (random var 1 and random var 2)
+%tmpdata = tmpdata(:,2:end); % remove first column(date)
+%tmpdata = tmpdata(:,1:(end-2)); % remove 2 last cols (random var 1 and random var 2)
+%% Dimension Reduction 
+alpha =0.00001; % significance level
+P = 10; % The order of the VAR model used for the computation of the 
+        % conditional Granger causality index (CGCI) 
+        % var is vector auto regression=>https://en.wikipedia.org/wiki/Vector_autoregression
+p = 10;
+disp('Hi');
+tmpdata(:,1) = []
+[n,m] = size(tmpdata);
+
+[CGCIM,pCGCIM] = CGCI(tmpdata,P,1); %dim reduction with CGCI, uncomment for CGCI
+%[CGCIM,pCGCIM] = GCI(xM1,P,1); %dim reduction with GCI, uncomment for GCI
+adj1M = pCGCIM < alpha;
+
+for i=m:-1:1
+ %disp(i);
+    if(adj1M(i,1)==0)
+  %      disp("einai iso me miden to:");
+   %     disp(i);
+        tmpdata(:,i)=[]; % delete cols for dim reduction based on CGCI adj1M and pvalues
+    end 
+end
+%[n,m] = size(xM1);
+
 %% split
 [m,n] = size(tmpdata);
-P = 0.70;
-dataTrain = tmpdata(1:round(P*m),:);
-dataTest = tmpdata((round(P*m)+1:end),:);
+d=m-1;
+Per = 0.70;
+dataTrain = tmpdata(1:round(Per*m),:);
+dataTest = tmpdata((round(Per*m)+1:end),:);
 % idx = randperm(m)  ;
 % dataTrain = tmpdata(idx(1:round(P*m)),:) ; 
 % dataTest = tmpdata(idx(round(P*m)+1:end),:) ;
